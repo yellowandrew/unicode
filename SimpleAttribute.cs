@@ -127,14 +127,16 @@ namespace SPA
         {
             string typeName = field.FieldType.FullName.Replace("[]", string.Empty);
            Type  type = field.FieldType.Assembly.GetType(typeName);
-          
-            if (Array.Find(field.FieldType.GetInterfaces(), x => x == typeof(ICollection)) != null)
+
+       
+          //  Debug.Log(field.FieldType);
+
+            if (field.FieldType.IsArray)
             {
               
                 var found = mono.GetComponentsInChildren(type);
                 int count = found.Length;
-                IList listToBeSet = field as IList; ;
-                listToBeSet = Array.CreateInstance(type, count);
+                IList listToBeSet = Array.CreateInstance(type, count);
 
                 for (int index = 0; index < count; index++)
                     listToBeSet[index] = found[index];
