@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace SPA
 {
@@ -62,6 +63,19 @@ namespace SPA
         public override void Set(MonoBehaviour mono, FieldInfo field)
         {
             var found = mono.gameObject.transform.Find(name);
+            field.SetValue(mono, found);
+        }
+    }
+
+    public class FindChildComponentAttribute : BaseAttribute
+    {
+        public FindChildComponentAttribute(string name) : base(name) {}
+        public override void Set(MonoBehaviour mono, FieldInfo field)
+        {
+            var ts = mono.gameObject.transform.Find(name);
+            string typeName = field.FieldType.FullName.Replace("[]", string.Empty);
+            Type type = field.FieldType.Assembly.GetType(typeName);
+            var found = ts.GetComponent(type);
             field.SetValue(mono, found);
         }
     }
@@ -158,5 +172,31 @@ namespace SPA
         }
     }
 
+    public class ButtonAttribute : BaseAttribute
+    {
+        public string method;
+        public object arg;
+        public ButtonAttribute(string name,string method,object arg) : base(name) {
+            this.method = method;
+            this.arg = arg;
+        }
+        public override void Set(MonoBehaviour mono, FieldInfo field)
+        {
+           Button btn = mono.gameObject.transform.Find(name).GetComponent<Button>();
+            field.SetValue(mono, btn);
+            btn.onClick.AddListener(()=> {
+                MethodInfo m = mono.GetType().GetMethod(method);
+                m.Invoke(mono, new object[] { arg});
+            });
+        }
+    }
 
+    public class AutoAttribute : AbsBaseAttribute
+    {
+        public override void Set(MonoBehaviour mono, FieldInfo field)
+        {
+            var obj = Activator.CreateInstance(field.FieldType);
+            field.SetValue(mono, obj);
+        }
+    }
 }
