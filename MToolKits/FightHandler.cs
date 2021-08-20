@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[Handler(2)]
 public class FightHandler : MsgHandler
 {
-    public FightHandler(UnityApp app, int tag) : base(app, tag)
+    public FightHandler(UnityApp app, int type) : base(app, type)
     {
        
     }

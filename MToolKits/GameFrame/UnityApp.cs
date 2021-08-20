@@ -1,14 +1,17 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using UnityEngine;
 
-public abstract class UnityApp
+public  class UnityApp
 {
     MonoBehaviour _mono;
     protected NetManager netManager;
     Dictionary<int, MsgHandler> handlers;
+
+    protected UIContainer uiContainer;
     public MonoBehaviour Mono {
         get { return _mono; }
     }
@@ -24,19 +27,61 @@ public abstract class UnityApp
         netManager = new NetManager();
         netManager.OnNetMSG = OnNetMessage;
 
+        uiContainer = new UIContainer();
+
         handlers = new Dictionary<int, MsgHandler>();
-        SetHandlers();
+        SetupHandlers();
 
         states = new Dictionary<int, GameState>();
+        SetupStates();
+        if (states.Count == 0)
+        {
+            Debug.LogError("需要一个游戏GameState");
+        }
+        else {
+            ChangeState(0);
+        }
+        
+  }
 
-        OnInit();
+    protected void SetupHandlers() {
+        Assembly asm = Assembly.GetExecutingAssembly();
+        Type[] types = asm.GetExportedTypes();
+        foreach (var t in types)
+        {
+            if (t.IsClass)
+            {
+                HandlerAttribute attr = t.GetCustomAttribute(typeof(HandlerAttribute), false) as HandlerAttribute;
+                if (attr != null)
+                {
+                    MsgHandler h = Activator.CreateInstance(t, new object[] {this, attr.type }) as MsgHandler;
+                    handlers.Add(attr.type, h);
+                    h.init();
+                }
+            }
+        }
     }
-    protected void addHandler(MsgHandler handler)
-    {
-        handlers.Add(handler.tag,handler);
-        handler.init();
+
+    void SetupStates() {
+        Assembly asm = Assembly.GetExecutingAssembly();
+        Type[] types = asm.GetExportedTypes();
+        foreach (var t in types)
+        {
+            if (t.IsClass)
+            {
+                GameStateAttribute attr = t.GetCustomAttribute(typeof(GameStateAttribute), false) as GameStateAttribute;
+                if (attr != null)
+                {
+                    GameState s = Activator.CreateInstance(t, new object[] { }) as GameState;
+                    s.SetApp(this);
+                    states.Add(attr.type, s);
+                }
+            }
+        }
     }
-    protected abstract void SetHandlers();
+    public UIView GetView(int type) {
+        return uiContainer.GetUI(type);
+    }
     public virtual void start() { }
     public virtual void update(float delta)
     {
@@ -101,20 +146,20 @@ public abstract class UnityApp
     }
     #region 消息分发处理
     Dictionary<int, List<MsgHandler>> dict = new Dictionary<int, List<MsgHandler>>();
-    public void BindMessage(int tag, int msgCode) {
+    public void BindMessage(int type, int msgCode) {
         List<MsgHandler> list = null;
         //之前没有注册过
         if (!dict.ContainsKey(msgCode))
         {
             list = new List<MsgHandler>();
-            list.Add(handlers[tag]);
+            list.Add(handlers[type]);
             dict.Add(msgCode, list);
             return;
         }
 
         //之前注册过
         list = dict[msgCode];
-        list.Add(handlers[tag]);
+        list.Add(handlers[type]);
     }
     void OnNetMessage(SocketMSG msg) {
         handlers[msg.OpCode].OnNetMessage(msg);
@@ -147,6 +192,19 @@ public abstract class UnityApp
         {
             list[i].OnLocalMessage(msgCode, message);
         }
+    }
+
+
+    public void ConnectServer() {
+        netManager.ConnectServer();
+    }
+    public void SendNetMessage(SocketMSG MSG)
+    {
+        netManager.SendData(MSG);
+    }
+    public void SendNetMessage(int opCode, int subCode, int command, object message)
+    {
+        netManager.SendData( opCode,  subCode,  command,  message);
     }
     #endregion
 

@@ -17,9 +17,6 @@ namespace SPA
                 {
                     attr.Set(mono, field);
                 }
-                else {
-                    Debug.LogError("attribute is null!!");
-                }
             }
         }
     }
@@ -66,6 +63,12 @@ namespace SPA
             field.SetValue(mono, found);
         }
     }
+
+
+    /// <summary>
+    /// 获取子物体组件
+    /// <param name="子物体完整路径"></param>
+    /// </summary>
 
     public class FindChildComponentAttribute : BaseAttribute
     {

@@ -5,14 +5,12 @@ using UnityEngine;
 
 public class AppLauncher : MonoBehaviour
 {
-   
-    [Header("应用/游戏主类名")]
-    public string AppClass= "UnityApp";
+  
     UnityApp app;
 
     void Awake()
     {
-        app = Assembly.GetExecutingAssembly().CreateInstance(AppClass) as UnityApp;
+        app = new UnityApp();
     }
     void Start()
     {

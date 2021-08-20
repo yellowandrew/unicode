@@ -4,6 +4,10 @@ using UnityEngine;
 
 public abstract class GameState
 {
+    protected UnityApp app;
+    public void SetApp(UnityApp app) {
+        this.app = app;
+    }
     public virtual void Update() { }
     public virtual void FixedUpdate() { }
     public virtual void OnEnter() { }
