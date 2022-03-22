@@ -597,31 +597,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\INYOUNG\\.nuget\\packages\\": {},
-    "d:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "/Users/mac/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Gits\\2022\\ServerWork\\LiteNetwork\\LiteNetwork.csproj",
+      "projectUniqueName": "/Users/mac/MyGithub/unicode/LiteNetwork/LiteNetwork.csproj",
       "projectName": "LiteNetwork",
-      "projectPath": "E:\\Gits\\2022\\ServerWork\\LiteNetwork\\LiteNetwork.csproj",
-      "packagesPath": "C:\\Users\\INYOUNG\\.nuget\\packages\\",
-      "outputPath": "E:\\Gits\\2022\\ServerWork\\LiteNetwork\\obj\\",
+      "projectPath": "/Users/mac/MyGithub/unicode/LiteNetwork/LiteNetwork.csproj",
+      "packagesPath": "/Users/mac/.nuget/packages/",
+      "outputPath": "/Users/mac/MyGithub/unicode/LiteNetwork/obj/",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "d:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\INYOUNG\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/Users/mac/.config/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "netstandard2.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -661,7 +654,7 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.404\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/5.0.406/RuntimeIdentifierGraph.json"
       }
     }
   }

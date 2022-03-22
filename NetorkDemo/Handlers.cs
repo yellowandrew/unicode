@@ -19,13 +19,13 @@ namespace NetorkDemo
         }
 
         [PackageHandle(1)]
-        public void OnLogin(Connection connection,Package package)
+        public void OnLogin(Connection connection,Package package, IParser parser)
         {
-            Console.WriteLine("Login Request");
+            var req = package as LoginRequestPackage;
+            Console.WriteLine($"OnLogin Request->username:{req.Username} password:{req.Password}");
 
-            var pag = new LoginResponePackage() { msg = "登录成功" };
-            //parser.WritePackageToStream(pag, connection.Writer);
-            connection.SendPackageAsyn(pag);
+            var res = new LoginResponePackage() { msg = "登录成功" };
+            connection.SendAsync(parser.WritePackageToBuffer(res));
         }
     }
 
@@ -37,12 +37,13 @@ namespace NetorkDemo
         }
 
         [PackageHandle(10)]
-        public void OnFight(Connection connection, Package package)
+        public void OnFight(Connection connection, Package package,IParser parser)
         {
-            Console.WriteLine("Fight Request");
-
-            var pag = new FightResponePackage() { msg = "哈哈,开始战斗了!" };
-            connection.SendPackageAsyn(pag);
+            
+            var req = package as FightRequestPackage;
+            Console.WriteLine($"OnFight Request->{req.Map}");
+            var res = new FightResponePackage() { msg = "哈哈,开始战斗了!" };
+            connection.SendAsync(parser.WritePackageToBuffer(res));
 
         }
     }

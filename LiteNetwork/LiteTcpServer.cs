@@ -10,14 +10,7 @@ namespace LiteNetwork
 {
 
    public class Connection : TcpSession {
-
-        IParser parser;
-        public Connection(TcpServer server, IParser parser):base(server)
-        {
-            this.parser = parser;
-        }
         public Connection(TcpServer server) : base(server) {
-           
            
         }
         protected override void OnConnected()
@@ -30,23 +23,15 @@ namespace LiteNetwork
         }
         protected override void OnReceived(byte[] buffer, long offset, long size)
         {
-            var package = parser.ReadPackageFromBuffer(buffer);
-            ((LiteTcpServer)Server).DispatchPackage(this,package);
+            ((LiteTcpServer)Server).Dispatch(this, buffer);
         }
         protected override void OnError(SocketError error)
         {
             Console.WriteLine($"Connection session caught an error with code {error}");
         }
-        public void SendPackage(Package package) {
-            Send(parser.WritePackageToBuffer(package));
-        }
-        public void SendPackageAsyn(Package package)
-        {
-            SendAsync(parser.WritePackageToBuffer(package));
-        }
-
-        public void Brocast(Package package) {
-            Server.Multicast(parser.WritePackageToBuffer(package));
+       
+        public void Brocast(byte[] buffer) {
+            Server.Multicast(buffer);
         }
     }
     public class LiteTcpServer : TcpServer
@@ -72,28 +57,29 @@ namespace LiteNetwork
                 }
             }
 
-            Console.WriteLine($"Server Create!!");
+            
         }
 
-        public void DispatchPackage(Connection connection, Package package) {
+        public void Dispatch(Connection connection, byte[] buffer) {
+            var package = parser.ReadPackageFromBuffer(buffer);
             if (handleActions.TryGetValue(package.id, out var item))
             {
                 var (m, h) = item;
-                m.Invoke(h, new object[] { connection, package });
+                m.Invoke(h, new object[] { connection, package,parser });
             }
 
         }
-        protected override TcpSession CreateSession() => new Connection(this,parser);
+        protected override TcpSession CreateSession() => new Connection(this);
 
         protected override void OnStarting()
         {
             base.OnStarting();
-            Console.WriteLine($"LiteTcpServer OnStarting......");
+            Console.WriteLine($"Server OnStarting......");
         }
         protected override void OnStarted()
         {
             base.OnStarted();
-            Console.WriteLine($"LiteTcpServer OnStarted!!");
+            Console.WriteLine($"Server OnStarted!!");
         }
 
         protected override void OnConnecting(TcpSession session)
@@ -122,17 +108,17 @@ namespace LiteNetwork
         protected override void OnStopping()
         {
             base.OnStopping();
-            Console.WriteLine($"LiteTcpServer OnStopping......");
+            Console.WriteLine($"Server OnStopping......");
         }
 
         protected override void OnStopped()
         {
             base.OnStopped();
-            Console.WriteLine($"LiteTcpServer OnStopped!!");
+            Console.WriteLine($"Server OnStopped!!");
         }
         protected override void OnError(SocketError error)
         {
-            Console.WriteLine($"Chat TCP server caught an error with code {error}");
+            Console.WriteLine($"Server caught an error with code {error}");
         }
     }
 }
