@@ -71,6 +71,22 @@ public class Parser
 
         return dictionary;
     }
+	public static T DicToObject<T>(Dictionary<string, object> dic) where T : new() {
+        var c = new T();
+
+        try
+        {
+            foreach (var d in dic)
+              c.GetType().GetProperty(d.Key).SetValue(c, d.Value);
+           
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.Message);
+        }
+       
+        return c;
+    }
 
 }
 
